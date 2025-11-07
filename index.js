@@ -8,6 +8,24 @@ function resize() {
 resize();
 window.addEventListener('resize', resize);
 
+const bgMusic = document.getElementById('bgMusic');
+bgMusic.volume = 0.25; // optional, lower the volume
+
+// Try to start immediately (may fail in some browsers)
+bgMusic.play().catch(() => {
+    console.log("Autoplay blocked, waiting for user interaction...");
+});
+
+// Start playback on first user interaction
+function startAudio() {
+    bgMusic.play().catch(e => console.log("Error playing audio:", e));
+    document.body.removeEventListener('click', startAudio);
+    document.body.removeEventListener('keydown', startAudio);
+}
+
+document.body.addEventListener('click', startAudio);
+document.body.addEventListener('keydown', startAudio);
+
 const textFragments = [
     "present day. present time.",
     "do you remember before the net?",
