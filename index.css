@@ -19,27 +19,6 @@ canvas {
     pointer-events: none;
     position: fixed;
     inset: 0;
-    background: repeating-linear-gradient(html, body {
-    margin: 0;
-    padding: 0;
-    background: #000;
-    overflow: hidden;
-    font-family: monospace;
-}
-
-canvas {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    image-rendering: pixelated;
-    filter: contrast(1.05) brightness(1.05) saturate(1.2);
-}
-
-/* CRT scanlines */
-#scan {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
     background: repeating-linear-gradient(
         to bottom,
         rgba(0,0,0,0) 0px,
@@ -77,22 +56,4 @@ canvas {
 #ui-controls input[type=range] {
   width: 120px;
   accent-color: #5dfc5d;
-}
-        to bottom,
-        rgba(0,0,0,0) 0px,
-        rgba(0,0,0,0) 2px,
-        rgba(0,0,0,0.25) 3px
-    );
-    mix-blend-mode: multiply;
-}
-
-/* Tag text */
-#tag {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    color: #6afc6a;
-    font-size: 12px;
-    opacity: 0.7;
-    letter-spacing: 0.5px;
 }
