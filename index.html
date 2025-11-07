@@ -11,11 +11,32 @@
     <div id="tag">observed node: mebious / entry</div>
 
     <div id="ui-controls">
-        <label>
-            <input type="checkbox" id="mouseFollowToggle" checked>
-            mouse influence
-        </label>
-        <input type="range" id="mouseStrength" min="0" max="100" value="35">
+        <!-- Original sliders -->
+        <label><input type="checkbox" id="mouseFollowToggle" checked> mouse influence</label><br>
+        <label>mouse strength <input type="range" id="mouseStrength" min="0" max="200" value="35"></label><br>
+        <label>number of texts <input type="range" id="numTexts" min="5" max="200" value="26"></label><br>
+        <label>min text size <input type="range" id="minSize" min="6" max="80" value="14"></label><br>
+        <label>max text size <input type="range" id="maxSize" min="10" max="150" value="40"></label><br>
+        <label>drift speed <input type="range" id="driftSpeed" min="0" max="10" value="0.4" step="0.01"></label><br>
+        <label>pulse range <input type="range" id="pulseRange" min="0" max="2" value="0.12" step="0.01"></label><br>
+        <label>awaken chance <input type="range" id="awakenChance" min="0" max="1" value="0.25" step="0.01"></label><br>
+        <label>jitter <input type="range" id="jitter" min="0" max="5" value="0.1" step="0.01"></label><br>
+        <label>wrap padding <input type="range" id="wrapPadding" min="50" max="800" value="200"></label><br>
+        <label>fade opacity <input type="range" id="fadeOpacity" min="0" max="0.5" value="0.06" step="0.01"></label><br>
+
+        <!-- 10 new sliders -->
+        <label>rotation speed <input type="range" id="rotationSpeed" min="0" max="0.5" value="0.02" step="0.01"></label><br>
+        <label>alpha min <input type="range" id="alphaMin" min="0" max="1" value="0.22" step="0.01"></label><br>
+        <label>alpha max <input type="range" id="alphaMax" min="0" max="1" value="0.67" step="0.01"></label><br>
+        <label>pulse speed <input type="range" id="pulseSpeed" min="0" max="1" value="0.2" step="0.01"></label><br>
+        <label>mouse radius <input type="range" id="mouseRadius" min="50" max="1000" value="200"></label><br>
+        <label>mouse factor <input type="range" id="mouseFactor" min="0" max="500" value="100"></label><br>
+        <label>hue <input type="range" id="hue" min="0" max="360" value="120"></label><br>
+        <label>saturation <input type="range" id="saturation" min="0" max="100" value="95"></label><br>
+        <label>brightness <input type="range" id="brightness" min="0" max="100" value="60"></label><br>
+        <label>max angle <input type="range" id="angleMax" min="0" max="3.14" value="0.2" step="0.01"></label><br>
+
+        <button id="refreshBtn">Refresh floats</button>
     </div>
 
     <script src="index.js"></script>
