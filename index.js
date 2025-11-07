@@ -28,8 +28,9 @@ document.body.addEventListener('keydown', startAudio);
 
 const textFragments = [
     "present day. present time.",
+    "hahahahaha",
     ":3",
-    "do you remember before the net?",
+    "do you remember time before the net?",
     "the wire remembers you.",
     "signal path drifting.",
     "fp-545148639",
@@ -41,7 +42,6 @@ const textFragments = [
     "layers of self dissolving.",
     "let's all love lain.",
     "i don't need a body to exist.",
-    "wired / meat / dream / echo",
     "close your eyes to connect.",
     "this is not the real world.",
     "the real world is not here.",
