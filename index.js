@@ -61,23 +61,33 @@ class FloatTxt {
         this.vxBase = (Math.random() + 0.5) * 0.08;
         this.vyBase = (Math.random() - 0.5) * 0.05;
 
-        // time offset so they don't all sync
+        // movement modulation
         this.speedT = Math.random() * 1000;
 
+        // text + style
         this.txt = pick(textFragments);
-        this.size = 10 + Math.random() * 27;
-        this.alpha = 0.35 + Math.random() * 0.35;
+        this.size = 4 + Math.random() * 27;
         this.angle = (Math.random() - 0.5) * Math.random();
+
+        // alpha pulsing
+        this.alphaBase = 0.05 + Math.random() * 0.7; // base transparency
+        this.alphaAmp = 0.10 + Math.random() * 0.15;  // how much it varies
+        this.alphaT = Math.random() * 2000;           // time offset so they don't sync
+        this.alphaSpeed = Math.random() * 0.4; // each text pulses at different speed
     }
     update() {
-        // smooth speed modulation (slow breathing movement)
-        // 0.6s period multiplier; change denominator for faster / slower breathing:
-        const speedMul = 1 - Math.sin(this.speedT * 0.001) * 0.01;
-        this.speedT += 1; // move along the waveform over time
+        // smooth speed modulation
+        const speedMul = 1 - Math.sin(this.speedT * 0.01) * 0.1;
+        this.speedT += 1;
 
         this.x += this.vxBase * speedMul;
         this.y += this.vyBase * speedMul;
 
+        // alpha pulsing
+        this.alphaT += this.alphaSpeed;
+        this.alpha = this.alphaBase + Math.sin(this.alphaT) * this.alphaAmp;
+
+        // borders -> respawn
         if (this.x < -200 || this.x > canvas.width + 200 ||
             this.y < -200 || this.y > canvas.height + 200) {
             this.reset();
@@ -94,6 +104,7 @@ class FloatTxt {
         ctx.restore();
     }
 }
+
 
 
 const floats = Array.from({ length: 22 }, () => new FloatTxt());
