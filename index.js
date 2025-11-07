@@ -9,7 +9,7 @@ resize();
 window.addEventListener('resize', resize);
 
 const bgMusic = document.getElementById('bgMusic');
-bgMusic.volume = 0.75; // optional, lower the volume
+bgMusic.volume = 0.25; // optional, lower the volume
 
 // Try to start immediately (may fail in some browsers)
 bgMusic.play().catch(() => {
