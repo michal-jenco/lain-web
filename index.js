@@ -56,9 +56,30 @@ window.addEventListener('mousemove', e => {
     mouse.lastMove = Date.now();
 });
 
-// slider and checkbox references
+// UI controls references
 const toggle = document.getElementById('mouseFollowToggle');
 const strengthSlider = document.getElementById('mouseStrength');
+const numTextsSlider = document.getElementById('numTexts');
+const minSizeSlider = document.getElementById('minSize');
+const maxSizeSlider = document.getElementById('maxSize');
+const driftSpeedSlider = document.getElementById('driftSpeed');
+const pulseRangeSlider = document.getElementById('pulseRange');
+const awakenChanceSlider = document.getElementById('awakenChance');
+const jitterSlider = document.getElementById('jitter');
+const wrapPaddingSlider = document.getElementById('wrapPadding');
+const fadeOpacitySlider = document.getElementById('fadeOpacity');
+
+// 10 new sliders
+const rotationSpeedSlider = document.getElementById('rotationSpeed');
+const alphaMinSlider = document.getElementById('alphaMin');
+const alphaMaxSlider = document.getElementById('alphaMax');
+const pulseSpeedSlider = document.getElementById('pulseSpeed');
+const mouseRadiusSlider = document.getElementById('mouseRadius');
+const mouseFactorSlider = document.getElementById('mouseFactor');
+const hueSlider = document.getElementById('hue');
+const saturationSlider = document.getElementById('saturation');
+const brightnessSlider = document.getElementById('brightness');
+const angleMaxSlider = document.getElementById('angleMax');
 
 class FloatTxt {
     constructor() { this.reset(); }
@@ -66,60 +87,62 @@ class FloatTxt {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
 
-        this.vx = (Math.random() - .5) * 0.4;
-        this.vy = (Math.random() - .5) * 0.4;
+        this.vx = (Math.random() - .5) * Number(driftSpeedSlider.value);
+        this.vy = (Math.random() - .5) * Number(driftSpeedSlider.value);
 
-        this.size = 14 + Math.random() * 26;
-        this.baseAlpha = 0.22 + Math.random() * 0.45;
+        const minSize = Number(minSizeSlider.value);
+        const maxSize = Number(maxSizeSlider.value);
+        this.size = minSize + Math.random()*(maxSize-minSize);
 
-        this.alphaPulseSpeed = 0.2 + Math.random()*0.002;
+        this.baseAlpha = Number(alphaMinSlider.value) + Math.random() * (Number(alphaMaxSlider.value)-Number(alphaMinSlider.value));
+        this.alphaPulseSpeed = Number(pulseSpeedSlider.value);
         this.pulseT = Math.random()*1000;
 
         this.txt = pick(textFragments);
-        this.angle = (Math.random()-0.5) * 0.2;
+        this.angle = (Math.random()-0.5) * Number(angleMaxSlider.value);
+        this.rotationSpeed = (Math.random()-0.5)*Number(rotationSpeedSlider.value);
 
-        this.awakenChance = Math.random()*0.25; // very rare
+        this.awakenChance = Number(awakenChanceSlider.value);
+        this.hue = Number(hueSlider.value);
+        this.saturation = Number(saturationSlider.value);
+        this.brightness = Number(brightnessSlider.value);
     }
     update() {
-        // gentle breathing
+        const pulseRange = Number(pulseRangeSlider.value);
         this.pulseT += this.alphaPulseSpeed;
-        let a = this.baseAlpha + Math.sin(this.pulseT)*0.12;
+        let a = this.baseAlpha + Math.sin(this.pulseT)*pulseRange;
 
-        // occasional "awaken" flash
-        if (Math.random() < this.awakenChance) {
-            a += 0.75;
-        }
-
+        if (Math.random() < this.awakenChance) a += 0.75;
         this.alpha = a;
 
-        // drift
         this.x += this.vx;
         this.y += this.vy;
 
-        // slight noise jitter (signal instability)
-        this.x += (Math.random()-0.5)*0.1;
-        this.y += (Math.random()-0.5)*0.1;
+        const jitter = Number(jitterSlider.value);
+        this.x += (Math.random()-0.5)*jitter;
+        this.y += (Math.random()-0.5)*jitter;
 
-        // mouse gravity only if enabled and "awake"
+        this.angle += this.rotationSpeed;
+
         const inactive = Date.now() - (mouse.lastMove || 0);
+        const mouseRadius = Number(mouseRadiusSlider.value);
+        const mouseFactor = Number(mouseFactorSlider.value)/100;
         if (toggle.checked && inactive < 2000) {
             const dx = mouse.x - this.x;
             const dy = mouse.y - this.y;
-
-            // read slider dynamically and cast to number
-            const strength = Number(strengthSlider.value) / 100;
-
-            this.x += dx * 0.0025 * strength;
-            this.y += dy * 0.0025 * strength;
+            const dist = Math.sqrt(dx*dx+dy*dy);
+            if (dist < mouseRadius) {
+                this.x += dx*0.0025*mouseFactor;
+                this.y += dy*0.0025*mouseFactor;
+            }
         } else {
-            // slowly forget you
             this.vx += (Math.random()-0.5)*0.001;
             this.vy += (Math.random()-0.5)*0.001;
         }
 
-        // wrap edges softly
-        if (this.x < -200 || this.x > canvas.width+200 ||
-            this.y < -200 || this.y > canvas.height+200) {
+        const wrapPadding = Number(wrapPaddingSlider.value);
+        if (this.x < -wrapPadding || this.x > canvas.width+wrapPadding ||
+            this.y < -wrapPadding || this.y > canvas.height+wrapPadding) {
             this.reset();
         }
     }
@@ -128,17 +151,34 @@ class FloatTxt {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
         ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = "#5dfc5d";
+        ctx.fillStyle = `hsl(${this.hue},${this.saturation}%,${this.brightness}%)`;
         ctx.font = `${this.size}px monospace`;
         ctx.fillText(this.txt, 0, 0);
         ctx.restore();
     }
 }
 
-const floats = Array.from({length: 26}, () => new FloatTxt());
+// initialize floats
+let floats = Array.from({length: Number(numTextsSlider.value)}, () => new FloatTxt());
+
+const refreshBtn = document.getElementById('refreshBtn');
+refreshBtn.addEventListener('click', () => {
+    floats.forEach(f => f.reset());
+});
+
+// dynamically adjust number of floats
+numTextsSlider.addEventListener('input', () => {
+    const n = Number(numTextsSlider.value);
+    if (n > floats.length) {
+        floats.push(...Array.from({length: n - floats.length}, () => new FloatTxt()));
+    } else if (n < floats.length) {
+        floats = floats.slice(0,n);
+    }
+});
 
 function draw() {
-    ctx.fillStyle = "rgba(0,0,0,0.06)";
+    const fadeOpacity = Number(fadeOpacitySlider.value);
+    ctx.fillStyle = `rgba(0,0,0,${fadeOpacity})`;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
     floats.forEach(f => { f.update(); f.draw(); });
