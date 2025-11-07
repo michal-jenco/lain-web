@@ -60,3 +60,23 @@ canvas {
     accent-color: #5dfc5d;
     margin-bottom: 4px;
 }
+
+#refreshBtn {
+    display: block;
+    margin-top: 6px;
+    padding: 4px 8px;
+    background-color: #000;
+    color: #5dfc5d;
+    border: 1px solid #5dfc5d;
+    font-family: monospace;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: 0.15s;
+}
+
+#refreshBtn:hover {
+    background-color: rgba(93, 252, 93, 0.1);
+    box-shadow: 0 0 6px #5dfc5d;
+}
+
