@@ -189,6 +189,14 @@ refreshBtn.addEventListener('click', () => {
     floats.forEach(f => f.reset());
 });
 
+// Keyboard toggle for mouse influence
+document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'm') { // press "M" key
+        toggle.checked = !toggle.checked; // toggle checkbox
+        console.log("Mouse influence:", toggle.checked ? "ON" : "OFF");
+    }
+});
+
 // dynamically adjust number of floats
 numTextsSlider.addEventListener('input', () => {
     const n = Number(numTextsSlider.value);
