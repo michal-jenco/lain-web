@@ -8,17 +8,6 @@ function resize() {
 resize();
 window.addEventListener('resize', resize);
 
-// UI elements
-const toggle = document.getElementById('mouseFollowToggle');
-const strengthSlider = document.getElementById('mouseStrength');
-
-// cursor tracking
-let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-window.addEventListener('mousemove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-});
-
 const textFragments = [
     "present day. present time.",
     "do you remember before the net?",
@@ -54,83 +43,78 @@ const textFragments = [
     "wake up, lain.",
     "static carries voices.",
     "something is watching you.",
-    "this signal is alive."
+    "this signal is alive.",
 ];
 
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function pick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+
+const mouse = { x: window.innerWidth/2, y: window.innerHeight/2, moved: false };
+window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.moved = true;
+    mouse.lastMove = Date.now();
+});
 
 class FloatTxt {
     constructor() { this.reset(); }
     reset() {
-        this.x = Math.random() * canvas.width - 500;
+        this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
 
-        // base drift velocities
-        this.vxBase = (Math.random() + 0.5) * 0.08;
-        this.vyBase = (Math.random() - 0.5) * 0.05;
+        this.vx = (Math.random() - .5) * 0.4;
+        this.vy = (Math.random() - .5) * 0.4;
 
-        // drifting tempo
-        this.speedT = Math.random() * 1000;
+        this.size = 14 + Math.random() * 26;
+        this.baseAlpha = 0.22 + Math.random() * 0.45;
 
-        // text appearance
+        this.alphaPulseSpeed = 0.2 + Math.random()*0.002;
+        this.pulseT = Math.random()*1000;
+
         this.txt = pick(textFragments);
-        this.size = 10 + Math.random() * 27;
-        this.angle = (Math.random() - 0.5) * Math.random();
+        this.angle = (Math.random()-0.5) * 0.2;
 
-        // breathing brightness
-        this.alphaBase = 0.30 + Math.random() * 0.30;
-        this.alphaAmp = 0.10 + Math.random() * 0.15;
-        this.alphaT = Math.random() * 2000;
-        this.alphaSpeed = 0.002 + Math.random() * 0.004;
+        this.awakenChance = Math.random()*0.25; // very rare
     }
-
     update() {
-        // movement breathing
-        const speedMul = 1 - Math.sin(this.speedT * 0.01) * 0.1;
-        this.speedT += 1;
+        // gentle breathing
+        this.pulseT += this.alphaPulseSpeed;
+        let a = this.baseAlpha + Math.sin(this.pulseT)*0.12;
 
-        this.x += this.vxBase * speedMul;
-        this.y += this.vyBase * speedMul;
-
-        // pulsing transparency
-        this.alphaT += this.alphaSpeed;
-        this.alpha = this.alphaBase + Math.sin(this.alphaT) * this.alphaAmp;
-
-        // -------------------------
-        // INTERACTION FIELD
-        // -------------------------
-        if (toggle.checked) {
-            const strength = strengthSlider.value / 100;
-            if (strength > 0) {
-                const dx = mouse.x - this.x;
-                const dy = mouse.y - this.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-
-                // attraction
-                this.x += dx * (0.0008 * strength);
-                this.y += dy * (0.0008 * strength);
-
-                // avoidance bubble
-                const avoidRadius = 120 * strength;
-                if (dist < avoidRadius) {
-                    const avoidForce = (avoidRadius - dist) * 0.01 * strength;
-                    this.x -= dx * avoidForce;
-                    this.y -= dy * avoidForce;
-                }
-
-                // gaze rotation
-                const targetAngle = Math.atan2(dy, dx);
-                this.angle += (targetAngle - this.angle) * (0.03 * strength);
-            }
+        // occasional "awaken" flash
+        if (Math.random() < this.awakenChance) {
+            a += 0.75;
         }
 
-        // bounds respawn
-        if (this.x < -300 || this.x > canvas.width + 300 ||
-            this.y < -300 || this.y > canvas.height + 300) {
+        this.alpha = a;
+
+        // drift
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // slight noise jitter (signal instability)
+        this.x += (Math.random()-0.5)*0.1;
+        this.y += (Math.random()-0.5)*0.1;
+
+        // mouse gravity only if you're "awake"
+        const inactive = Date.now() - (mouse.lastMove || 0);
+        if (inactive < 2000) {
+            const dx = mouse.x - this.x;
+            const dy = mouse.y - this.y;
+            this.x += dx * 0.0025;
+            this.y += dy * 0.0025;
+        } else {
+            // slowly forget you
+            this.vx += (Math.random()-0.5)*0.001;
+            this.vy += (Math.random()-0.5)*0.001;
+        }
+
+        // wrap edges softly
+        if (this.x < -200 || this.x > canvas.width+200 ||
+            this.y < -200 || this.y > canvas.height+200) {
             this.reset();
         }
     }
-
     draw() {
         ctx.save();
         ctx.translate(this.x, this.y);
@@ -143,22 +127,15 @@ class FloatTxt {
     }
 }
 
-const floats = Array.from({ length: 26 }, () => new FloatTxt());
-let paused = false;
+const floats = Array.from({length: 26}, () => new FloatTxt());
 
 function draw() {
-    if (!paused) {
-        ctx.fillStyle = "rgba(0,0,0,0.08)";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
-        floats.forEach(f => { f.update(); f.draw(); });
-    }
+    // more dream, less smear
+    ctx.fillStyle = "rgba(0,0,0,0.06)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    floats.forEach(f => { f.update(); f.draw(); });
+
     requestAnimationFrame(draw);
 }
 draw();
-
-window.addEventListener('keydown', e => {
-    if (e.key === " ") paused = !paused;
-    if (e.key.toLowerCase() === "d") {
-        floats.push(new FloatTxt(), new FloatTxt(), new FloatTxt());
-    }
-});
