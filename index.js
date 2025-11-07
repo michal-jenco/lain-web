@@ -16,25 +16,68 @@ const textFragments = [
     "fp-545148639",
     "mebious > entry",
     "your presence has been logged.",
+
+    // new ones:
+    "no boundaries between thought and signal.",
+    "do you believe in god?",
+    "i can hear you.",
+    "layers of self dissolving.",
+    "let's all love lain.",
+    "i don't need a body to exist.",
+    "wired / meat / dream / echo",
+    "close your eyes to connect.",
+    "this is not the real world.",
+    "the real world is not here.",
+    "there is no frontier between us.",
+    "everything is connected.",
+    "i am here.",
+    "i am not here.",
+    "i thought i was the only one.",
+    "your identity is leaking.",
+    "do you remember who you were?",
+    "incoming transmission…",
+    "you are already inside.",
+    "the sky hums like a modem.",
+    "i feel reality thinning.",
+    "synchronization increasing.",
+    "the network is breathing.",
+    "some things are better forgotten.",
+    "wake up, lain.",
+    "static carries voices.",
+    "something is watching you.",
+    "this signal is alive.",
 ];
+
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 class FloatTxt {
     constructor() { this.reset(); }
     reset() {
-        this.x = Math.random() * canvas.width;
+        this.x = Math.random() * canvas.width - 500;
         this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 0.08;
-        this.vy = (Math.random() - 0.5) * 0.08;
+
+        // base drift
+        this.vxBase = (Math.random() + 0.5) * 0.08;
+        this.vyBase = (Math.random() - 0.5) * 0.05;
+
+        // time offset so they don't all sync
+        this.speedT = Math.random() * 1000;
+
         this.txt = pick(textFragments);
-        this.size = 12 + Math.random() * 10;
+        this.size = 10 + Math.random() * 27;
         this.alpha = 0.35 + Math.random() * 0.35;
-        this.angle = (Math.random() - 0.5) * 0.15;
+        this.angle = (Math.random() - 0.5) * Math.random();
     }
     update() {
-        this.x += this.vx;
-        this.y += this.vy;
+        // smooth speed modulation (slow breathing movement)
+        // 0.6s period multiplier; change denominator for faster / slower breathing:
+        const speedMul = 1 - Math.sin(this.speedT * 0.001) * 0.01;
+        this.speedT += 1; // move along the waveform over time
+
+        this.x += this.vxBase * speedMul;
+        this.y += this.vyBase * speedMul;
+
         if (this.x < -200 || this.x > canvas.width + 200 ||
             this.y < -200 || this.y > canvas.height + 200) {
             this.reset();
@@ -51,6 +94,7 @@ class FloatTxt {
         ctx.restore();
     }
 }
+
 
 const floats = Array.from({ length: 22 }, () => new FloatTxt());
 let paused = false;
