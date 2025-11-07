@@ -40,20 +40,23 @@ canvas {
 }
 
 #ui-controls {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  padding: 6px 10px;
-  background: rgba(0,0,0,0.35);
-  border: 1px solid rgba(93,252,93,0.5);
-  font-family: monospace;
-  font-size: 12px;
-  color: #5dfc5d;
-  user-select: none;
-  backdrop-filter: blur(2px);
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(93,252,93,0.5);
+    font-family: monospace;
+    font-size: 12px;
+    color: #5dfc5d;
+    user-select: none;
+    backdrop-filter: blur(2px);
+    max-height: 95vh;
+    overflow-y: auto;
 }
 
 #ui-controls input[type=range] {
-  width: 120px;
-  accent-color: #5dfc5d;
+    width: 140px;
+    accent-color: #5dfc5d;
+    margin-bottom: 4px;
 }
