@@ -56,6 +56,10 @@ window.addEventListener('mousemove', e => {
     mouse.lastMove = Date.now();
 });
 
+// slider and checkbox references
+const toggle = document.getElementById('mouseFollowToggle');
+const strengthSlider = document.getElementById('mouseStrength');
+
 class FloatTxt {
     constructor() { this.reset(); }
     reset() {
@@ -96,13 +100,17 @@ class FloatTxt {
         this.x += (Math.random()-0.5)*0.1;
         this.y += (Math.random()-0.5)*0.1;
 
-        // mouse gravity only if you're "awake"
+        // mouse gravity only if enabled and "awake"
         const inactive = Date.now() - (mouse.lastMove || 0);
-        if (inactive < 2000) {
+        if (toggle.checked && inactive < 2000) {
             const dx = mouse.x - this.x;
             const dy = mouse.y - this.y;
-            this.x += dx * 0.0025;
-            this.y += dy * 0.0025;
+
+            // read slider dynamically and cast to number
+            const strength = Number(strengthSlider.value) / 100;
+
+            this.x += dx * 0.0025 * strength;
+            this.y += dy * 0.0025 * strength;
         } else {
             // slowly forget you
             this.vx += (Math.random()-0.5)*0.001;
@@ -130,7 +138,6 @@ class FloatTxt {
 const floats = Array.from({length: 26}, () => new FloatTxt());
 
 function draw() {
-    // more dream, less smear
     ctx.fillStyle = "rgba(0,0,0,0.06)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
