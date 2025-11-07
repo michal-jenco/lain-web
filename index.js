@@ -28,6 +28,7 @@ document.body.addEventListener('keydown', startAudio);
 
 const textFragments = [
     "present day. present time.",
+    ":3",
     "do you remember before the net?",
     "the wire remembers you.",
     "signal path drifting.",
